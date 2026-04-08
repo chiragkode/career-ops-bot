@@ -2,72 +2,58 @@ import streamlit as st
 import google.generativeai as genai
 from pypdf import PdfReader
 
-# 1. API Configuration
-if api_key:
-    try:
-        genai.configure(api_key=api_key)
-        # Defining the model inside the try block
-        model = genai.GenerativeModel('gemini-2.0-flash')
-    except Exception as e:
-        # This is the 'except' block the error was looking for
-        st.error(f"Configuration Error: {e}")
-        st.stop()
-else:
-    st.error("API Key not found.")
-    st.stop()
+# 1. Initialize variables to prevent NameError
+api_key = None
+model = None
 
-# 2. Sidebar Debugger (Optional)
-with st.sidebar:
-    st.write("### AI Status")
-    try:
-        # Lists models to confirm connectivity
-        st.success("Connected to Gemini 2.0")
-    except:
-        st.warning("Model selection issue")
-# 1. Personalization: Your Professional Context
+# 2. Personalization: Your Professional Context
 CHIRAG_PROFILE = {
     "name": "Chirag Kode",
-    "location": "Mumbai, India / APAC Remote",
+    "location": "Mumbai, India",
     "experience": "6+ years in SaaS, MarTech, and Cloud Sales",
-    "key_companies": ["Adobe", "Meta", "Disney Star", "Greenroom Now", "SafeSpace Global"],
-    "tools": ["HubSpot", "Salesforce", "Apollo.io", "CRM Optimization"],
-    "expertise": ["Influencer Marketing", "Lead Generation", "Ad Sales", "Bioenergy/Sustainability"]
+    "key_companies": ["Adobe", "Meta", "Disney Star", "Greenroom Now"],
+    "tools": ["HubSpot", "Salesforce", "Apollo.io", "CRM Optimization"]
 }
 
-# 2. API Key and Model Configuration
-api_key = None
-
-# Check Streamlit Cloud Secrets first
+# 3. Secure API Configuration
 if "YOUR_GEMINI_API_KEY" in st.secrets:
     api_key = st.secrets["YOUR_GEMINI_API_KEY"]
 else:
-    # Fallback for local testing on your MacBook Air
+    # Fallback for your MacBook Air testing
     api_key = "AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk"
 
 if api_key:
-    genai.configure(api_key=api_key)
-    # Using the stable model name string
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    try:
+        genai.configure(api_key=api_key)
+        # Using 2.0 Flash for April 2026 stability
+        model = genai.GenerativeModel('gemini-2.0-flash')
+    except Exception as e:
+        st.error(f"AI Configuration Error: {e}")
+        st.stop()
 else:
-    st.error("API Key missing! Please add YOUR_GEMINI_API_KEY to Streamlit Secrets.")
+    st.error("API Key not found in Secrets.")
     st.stop()
 
-# 3. Helper Function to Parse PDF
+# 4. Helper Function to Parse PDF
 def extract_resume_text(file):
-    reader = PdfReader(file)
-    text = ""
-    for page in reader.pages:
-        text += page.extract_text()
-    return text
+    try:
+        reader = PdfReader(file)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text()
+        return text
+    except Exception as e:
+        st.error(f"Error reading PDF: {e}")
+        return None
 
-# 4. Streamlit UI Setup
+# 5. Streamlit UI Setup
 st.set_page_config(page_title="Chirag's Career-Ops", page_icon="🚀")
-st.title("💼 Career-Ops Bot: Sales & Consulting Edition")
-st.markdown(f"**Targeting high-value SaaS & MarTech roles for {CHIRAG_PROFILE['name']}**")
+st.title("💼 Career-Ops Bot")
+st.markdown(f"**Optimization Engine for {CHIRAG_PROFILE['name']}**")
 
 with st.sidebar:
-    st.info(f"📍 Location: {CHIRAG_PROFILE['location']}")
-    st.write("### Tech Stack")
+    st.info(f"📍 Base: {CHIRAG_PROFILE['location']}")
+    st.write("### Tech Stack Expertise")
     for tool in CHIRAG_PROFILE['tools']:
         st.code(tool)
 
@@ -78,27 +64,26 @@ if st.button("Analyze Strategic Fit"):
     if uploaded_file and job_description:
         resume_text = extract_resume_text(uploaded_file)
         
-        with st.spinner("Analyzing match..."):
-            prompt = f"""
-            You are an elite career strategist for Chirag Kode.
-            Candidate Background: {CHIRAG_PROFILE}
-            
-            Task: Compare this Resume and Job Description.
-            Resume Text: {resume_text}
-            Job Description: {job_description}
-            
-            Provide:
-            1. **Match Score (0-100)**: Based on his 6+ years of SaaS/Cloud/MarTech exp.
-            2. **Key Alignment**: Mention specific successes at {CHIRAG_PROFILE['key_companies']}.
-            3. **Resume Tweak**: Rewrite 2 bullet points to better match this JD.
-            4. **LinkedIn Outreach**: Draft a high-conversion message to the hiring manager.
-            """
-            
-            try:
-                response = model.generate_content(prompt)
-                st.markdown("---")
-                st.markdown(response.text)
-            except Exception as e:
-                st.error(f"AI Generation Error: {e}")
+        if resume_text:
+            with st.spinner("AI is analyzing your fit..."):
+                prompt = f"""
+                You are a Senior Career Strategist.
+                Candidate: {CHIRAG_PROFILE}
+                Resume Content: {resume_text}
+                Job Description: {job_description}
+                
+                Task:
+                1. Provide a Match Score (0-100).
+                2. Highlight how his experience at {CHIRAG_PROFILE['key_companies']} fits this role.
+                3. Draft a high-conversion LinkedIn message to the Hiring Manager.
+                4. Suggest 2 bullet point edits for the resume to better align with this JD.
+                """
+                
+                try:
+                    response = model.generate_content(prompt)
+                    st.markdown("---")
+                    st.markdown(response.text)
+                except Exception as e:
+                    st.error(f"Analysis failed: {e}")
     else:
-        st.warning("Please upload a resume and paste a job description.")
+        st.warning("Please upload your resume and paste a job description first.")
