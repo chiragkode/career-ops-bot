@@ -22,7 +22,7 @@ if "YOUR_GEMINI_API_KEY" in st.secrets:
     api_key = st.secrets["YOUR_GEMINI_API_KEY"]
 else:
     # If running locally, you can use st.sidebar to input a key manually
-    api_key = st.sidebar.text_input("AIzaSyAvcSEiYpDfcVPFg7AvhEr1uFHInHQAa-U", type="password")
+    api_key = st.sidebar.text_input("AIzaSyBJnjKxEPgt1uveIY1Zo4PZBg37NgICOQI", type="password")
 
 if api_key:
     try:
