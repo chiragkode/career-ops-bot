@@ -1,22 +1,22 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. Initialize the variable with a default value (None)
-api_key = None
+# Define the variable immediately to prevent NameError
+api_key = None 
 
-# 2. Try to get the key from Streamlit Cloud Secrets
-if "AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk" in st.secrets:
-    api_key = st.secrets["AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk"]
+# Check Secrets first (Streamlit Cloud)
+if "YOUR_GEMINI_API_KEY" in st.secrets:
+    api_key = st.secrets["YOUR_GEMINI_API_KEY"]
+# Fallback for local testing on your MacBook
 else:
-    # Fallback for local testing on your MacBook Air
     api_key = "AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk"
 
-# 3. Configure the AI only if the key exists
+# Only configure if the key was found
 if api_key:
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel('gemini-1.5-flash')
 else:
-    st.error("Critical Error: API Key is not defined in Secrets or Local Script.")
+    st.error("API Key not found. Please add it to your Secrets.")
     st.stop()
 
 # Personalization: Your Career Context
