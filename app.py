@@ -2,11 +2,11 @@ import streamlit as st
 import google.generativeai as genai
 from pypdf import PdfReader
 
-# 1. Initialize variables to prevent NameError
+# --- 1. INITIALIZATION (Fixes NameError) ---
 api_key = None
 model = None
 
-# 2. Personalization: Your Professional Context
+# --- 2. YOUR PROFESSIONAL CONTEXT ---
 CHIRAG_PROFILE = {
     "name": "Chirag Kode",
     "location": "Mumbai, India",
@@ -15,26 +15,27 @@ CHIRAG_PROFILE = {
     "tools": ["HubSpot", "Salesforce", "Apollo.io", "CRM Optimization"]
 }
 
-# 3. Secure API Configuration
+# --- 3. SECURE API CONFIGURATION ---
+# We check Secrets first (Cloud), then fallback to the hardcoded key (Local)
 if "YOUR_GEMINI_API_KEY" in st.secrets:
     api_key = st.secrets["YOUR_GEMINI_API_KEY"]
 else:
-    # Fallback for your MacBook Air testing
     api_key = "AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk"
 
+# Now that api_key is defined, we can safely check it
 if api_key:
     try:
         genai.configure(api_key=api_key)
-        # Using 2.0 Flash for April 2026 stability
+        # Using Gemini 2.0 Flash for April 2026 stability
         model = genai.GenerativeModel('gemini-2.0-flash')
     except Exception as e:
         st.error(f"AI Configuration Error: {e}")
         st.stop()
 else:
-    st.error("API Key not found in Secrets.")
+    st.error("API Key not found. Please check your Streamlit Secrets.")
     st.stop()
 
-# 4. Helper Function to Parse PDF
+# --- 4. HELPER FUNCTIONS ---
 def extract_resume_text(file):
     try:
         reader = PdfReader(file)
@@ -46,7 +47,7 @@ def extract_resume_text(file):
         st.error(f"Error reading PDF: {e}")
         return None
 
-# 5. Streamlit UI Setup
+# --- 5. STREAMLIT UI SETUP ---
 st.set_page_config(page_title="Chirag's Career-Ops", page_icon="🚀")
 st.title("💼 Career-Ops Bot")
 st.markdown(f"**Optimization Engine for {CHIRAG_PROFILE['name']}**")
@@ -56,6 +57,8 @@ with st.sidebar:
     st.write("### Tech Stack Expertise")
     for tool in CHIRAG_PROFILE['tools']:
         st.code(tool)
+    st.write("---")
+    st.caption("v2.1 | Stable Release")
 
 uploaded_file = st.file_uploader("Upload your Resume (PDF)", type="pdf")
 job_description = st.text_area("Paste the Job Description here:", height=300)
@@ -67,16 +70,15 @@ if st.button("Analyze Strategic Fit"):
         if resume_text:
             with st.spinner("AI is analyzing your fit..."):
                 prompt = f"""
-                You are a Senior Career Strategist.
-                Candidate: {CHIRAG_PROFILE}
+                You are a Senior Career Strategist for {CHIRAG_PROFILE['name']}.
                 Resume Content: {resume_text}
                 Job Description: {job_description}
                 
-                Task:
-                1. Provide a Match Score (0-100).
-                2. Highlight how his experience at {CHIRAG_PROFILE['key_companies']} fits this role.
-                3. Draft a high-conversion LinkedIn message to the Hiring Manager.
-                4. Suggest 2 bullet point edits for the resume to better align with this JD.
+                Provide:
+                1. Match Score (0-100) based on his 6+ years in SaaS/MarTech.
+                2. Alignment analysis regarding his time at {CHIRAG_PROFILE['key_companies']}.
+                3. A high-conversion LinkedIn message to the Hiring Manager.
+                4. 2 specific bullet point edits for the resume to better fit this JD.
                 """
                 
                 try:
