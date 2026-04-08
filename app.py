@@ -16,7 +16,15 @@ import streamlit as st
 import google.generativeai as genai
 
 # This looks for the key you pasted into the Streamlit Cloud "Advanced Settings"
-api_key = st.secrets["AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk"]
+import streamlit as st
+import google.generativeai as genai
+
+# This pulls the key from the 'Advanced Settings' you filled in on Streamlit Cloud
+try:
+    api_key = st.secrets["AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk"]
+    genai.configure(api_key=api_key)
+except KeyError:
+    st.error("API Key not found. Please add AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk to Streamlit Secrets.")
 genai.configure(api_key=api_key) # Get this from aistudio.google.com
 model = genai.GenerativeModel('gemini-1.5-flash')
 
