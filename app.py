@@ -4,20 +4,20 @@ import google.generativeai as genai
 # Define the variable immediately to prevent NameError
 api_key = None 
 
-# Check Secrets first (Streamlit Cloud)
+# Check for the key in Streamlit Cloud Secrets
 if "YOUR_GEMINI_API_KEY" in st.secrets:
     api_key = st.secrets["YOUR_GEMINI_API_KEY"]
-# Fallback for local testing on your MacBook
 else:
+    # Fallback for local testing on your MacBook Air
     api_key = "AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk"
 
-# Only configure if the key was found
+# Configure the model
 if api_key:
     genai.configure(api_key=api_key)
-    # Change from 'gemini-1.5-flash' to the versioned string below
-model = genai.GenerativeModel('models/gemini-1.5-flash')
+    # Using the 'models/' prefix to avoid the previous 404 error
+    model = genai.GenerativeModel('models/gemini-1.5-flash')
 else:
-    st.error("API Key not found. Please add it to your Secrets.")
+    st.error("API Key missing.")
     st.stop()
 
 # Personalization: Your Career Context
