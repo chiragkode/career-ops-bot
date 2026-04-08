@@ -1,6 +1,22 @@
 import streamlit as st
 import google.generativeai as genai
 
+# 1. Access the API Key safely
+try:
+    # This looks for the key in your Streamlit Cloud "Advanced Settings"
+    api_key = st.secrets["YOUR_GEMINI_API_KEY"]
+except:
+    # Fallback for when you run it locally on your MacBook
+    api_key = "AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk"
+
+# 2. Configure Gemini
+if api_key:
+    genai.configure(api_key=api_key)
+else:
+    st.error("API Key missing! Please add it to Streamlit Secrets.")
+
+# ... rest of your code ...
+
 # Personalization: Your Career Context
 CHIRAG_PROFILE = {
     "name": "Chirag Kode",
