@@ -1,85 +1,39 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 from pypdf import PdfReader
 
-# --- 1. INITIALIZATION (Fixes NameError) ---
-api_key = None
-model = None
+# 1. Initialize Client (using your Secret)
+api_key = st.secrets.get("YOUR_GEMINI_API_KEY")
 
-# --- 2. YOUR PROFESSIONAL CONTEXT ---
-CHIRAG_PROFILE = {
-    "name": "Chirag Kode",
-    "location": "Mumbai, India",
-    "experience": "6+ years in SaaS, MarTech, and Cloud Sales",
-    "key_companies": ["Adobe", "Meta", "Disney Star", "Greenroom Now"],
-    "tools": ["HubSpot", "Salesforce", "Apollo.io", "CRM Optimization"]
-}
-
-# --- 3. SECURE API CONFIGURATION ---
 if api_key:
-    try:
-        genai.configure(api_key=api_key)
-        # Defining the model inside the safety of the 'try' block
-        model = genai.GenerativeModel('gemini-2.5-flash')
-    except Exception as e:
-        # This is the 'except' block the error was looking for
-        st.error(f"AI Configuration Error: {e}")
-        st.stop()
+    # The new SDK uses a Client object
+    client = genai.Client(api_key=api_key)
 else:
-    st.error("API Key not found in Secrets.")
+    st.error("API Key not found in Streamlit Secrets.")
     st.stop()
 
-# --- 4. HELPER FUNCTIONS ---
-def extract_resume_text(file):
-    try:
-        reader = PdfReader(file)
-        text = ""
-        for page in reader.pages:
-            text += page.extract_text()
-        return text
-    except Exception as e:
-        st.error(f"Error reading PDF: {e}")
-        return None
+# 2. Updated Analysis Function
+def run_analysis(resume_text, job_desc):
+    prompt = f"Analyze this resume for this job: \nResume: {resume_text}\nJD: {job_desc}"
+    
+    # New syntax for generating content in 2026
+    response = client.models.generate_content(
+        model='gemini-2.0-flash', 
+        contents=prompt
+    )
+    return response.text
 
-# --- 5. STREAMLIT UI SETUP ---
-st.set_page_config(page_title="Chirag's Career-Ops", page_icon="🚀")
-st.title("💼 Career-Ops Bot")
-st.markdown(f"**Optimization Engine for {CHIRAG_PROFILE['name']}**")
+# 3. Streamlit Interface (Chirag's Career-Ops)
+st.title("💼 Career-Ops Bot v3.0")
+uploaded_file = st.file_uploader("Upload Resume", type="pdf")
+job_description = st.text_area("Paste JD")
 
-with st.sidebar:
-    st.info(f"📍 Base: {CHIRAG_PROFILE['location']}")
-    st.write("### Tech Stack Expertise")
-    for tool in CHIRAG_PROFILE['tools']:
-        st.code(tool)
-    st.write("---")
-    st.caption("v2.1 | Stable Release")
-
-uploaded_file = st.file_uploader("Upload your Resume (PDF)", type="pdf")
-job_description = st.text_area("Paste the Job Description here:", height=300)
-
-if st.button("Analyze Strategic Fit"):
+if st.button("Analyze Fit"):
     if uploaded_file and job_description:
-        resume_text = extract_resume_text(uploaded_file)
+        # (PDF extraction logic remains the same)
+        reader = PdfReader(uploaded_file)
+        resume_text = "".join([page.extract_text() for page in reader.pages])
         
-        if resume_text:
-            with st.spinner("AI is analyzing your fit..."):
-                prompt = f"""
-                You are a Senior Career Strategist for {CHIRAG_PROFILE['name']}.
-                Resume Content: {resume_text}
-                Job Description: {job_description}
-                
-                Provide:
-                1. Match Score (0-100) based on his 6+ years in SaaS/MarTech.
-                2. Alignment analysis regarding his time at {CHIRAG_PROFILE['key_companies']}.
-                3. A high-conversion LinkedIn message to the Hiring Manager.
-                4. 2 specific bullet point edits for the resume to better fit this JD.
-                """
-                
-                try:
-                    response = model.generate_content(prompt)
-                    st.markdown("---")
-                    st.markdown(response.text)
-                except Exception as e:
-                    st.error(f"Analysis failed: {e}")
-    else:
-        st.warning("Please upload your resume and paste a job description first.")
+        with st.spinner("AI analyzing..."):
+            result = run_analysis(resume_text, job_description)
+            st.markdown(result)
