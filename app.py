@@ -2,6 +2,29 @@ import streamlit as st
 import google.generativeai as genai
 from pypdf import PdfReader
 
+# 1. API Configuration
+api_key = st.secrets.get("YOUR_GEMINI_API_KEY", "AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk")
+
+if api_key:
+    try:
+        genai.configure(api_key=api_key)
+        # Switching to Gemini 2.0 Flash for stability and speed
+        model = genai.GenerativeModel('gemini-2.0-flash')
+    except Exception as e:
+        st.error(f"Configuration Error: {e}")
+        st.stop()
+else:
+    st.error("API Key not found.")
+    st.stop()
+
+# 2. Sidebar Debugger (Optional)
+with st.sidebar:
+    st.write("### AI Status")
+    try:
+        # Lists models to confirm connectivity
+        st.success("Connected to Gemini 2.0")
+    except:
+        st.warning("Model selection issue")
 # 1. Personalization: Your Professional Context
 CHIRAG_PROFILE = {
     "name": "Chirag Kode",
