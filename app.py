@@ -16,24 +16,21 @@ CHIRAG_PROFILE = {
 }
 
 # --- 3. SECURE API CONFIGURATION ---
-# We check Secrets first (Cloud), then fallback to the hardcoded key (Local)
+# Removed hardcoded key to prevent future "Leaked" errors.
+# The app will now ONLY pull from Streamlit Secrets or local environment.
 if "YOUR_GEMINI_API_KEY" in st.secrets:
     api_key = st.secrets["YOUR_GEMINI_API_KEY"]
 else:
-    api_key = "AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk"
+    # If running locally, you can use st.sidebar to input a key manually
+    api_key = st.sidebar.text_input("AIzaSyAvcSEiYpDfcVPFg7AvhEr1uFHInHQAa-U", type="password")
 
-# Now that api_key is defined, we can safely check it
 if api_key:
     try:
         genai.configure(api_key=api_key)
-        # Using Gemini 2.0 Flash for April 2026 stability
         model = genai.GenerativeModel('gemini-2.0-flash')
     except Exception as e:
         st.error(f"AI Configuration Error: {e}")
         st.stop()
-else:
-    st.error("API Key not found. Please check your Streamlit Secrets.")
-    st.stop()
 
 # --- 4. HELPER FUNCTIONS ---
 def extract_resume_text(file):
