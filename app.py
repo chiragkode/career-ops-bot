@@ -12,7 +12,12 @@ CHIRAG_PROFILE = {
 }
 
 # Configure Gemini
-genai.configure(api_key="AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk") # Get this from aistudio.google.com
+import streamlit as st
+import google.generativeai as genai
+
+# This looks for the key you pasted into the Streamlit Cloud "Advanced Settings"
+api_key = st.secrets["AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk"]
+genai.configure(api_key=api_key) # Get this from aistudio.google.com
 model = genai.GenerativeModel('gemini-1.5-flash')
 
 st.set_page_config(page_title="Chirag's Career-Ops", page_icon="📈")
