@@ -13,7 +13,8 @@ api_key = st.secrets.get("YOUR_GEMINI_API_KEY")
 
 if api_key:
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    # Change from 'gemini-1.5-flash' to the 2026 stable version
+model = genai.GenerativeModel('gemini-2.5-flash')
 else:
     st.error("Please add your API Key to Streamlit Secrets.")
     st.stop()
