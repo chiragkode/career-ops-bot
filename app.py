@@ -14,7 +14,8 @@ else:
 # Only configure if the key was found
 if api_key:
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    # Change from 'gemini-1.5-flash' to the versioned string below
+model = genai.GenerativeModel('models/gemini-1.5-flash')
 else:
     st.error("API Key not found. Please add it to your Secrets.")
     st.stop()
@@ -44,7 +45,8 @@ try:
 except KeyError:
     st.error("API Key not found. Please add AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk to Streamlit Secrets.")
 genai.configure(api_key=api_key) # Get this from aistudio.google.com
-model = genai.GenerativeModel('gemini-1.5-flash')
+# Change from 'gemini-1.5-flash' to the versioned string below
+model = genai.GenerativeModel('models/gemini-1.5-flash')
 
 st.set_page_config(page_title="Chirag's Career-Ops", page_icon="📈")
 st.title("🚀 Career-Ops: Personal Sales Agent")
