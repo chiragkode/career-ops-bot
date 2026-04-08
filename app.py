@@ -3,15 +3,13 @@ import google.generativeai as genai
 from pypdf import PdfReader
 
 # 1. API Configuration
-api_key = st.secrets.get("YOUR_GEMINI_API_KEY", "AIzaSyBeQYHj6SqzAP1IuD_PVd96ICeUIM1qKsk")
-
 if api_key:
     try:
         genai.configure(api_key=api_key)
-        # Switching to Gemini 2.0 Flash for stability and speed
-        # Updated for April 2026 model availability
-model = genai.GenerativeModel('gemini-2.0-flash')
+        # Defining the model inside the try block
+        model = genai.GenerativeModel('gemini-2.0-flash')
     except Exception as e:
+        # This is the 'except' block the error was looking for
         st.error(f"Configuration Error: {e}")
         st.stop()
 else:
