@@ -4,8 +4,8 @@ import google.generativeai as genai
 # Personalization: Your Career Context
 CHIRAG_PROFILE = {
     "name": "Chirag Kode",
-    "location": “Remote, Mumbai, APAC, Malaysia,
-    "experience": "6+ years in SaaS Sales, MarTech Sales, and Cloud Sales",
+    "location": "Remote, Mumbai, APAC, Malaysia",
+    "experience": "6+ years in SaaS, MarTech, and Cloud Sales",
     "key_companies": ["Adobe", "Meta", "Disney Star", "Greenroom Now"],
     "tools": ["HubSpot", "Salesforce", "Apollo.io", "CRM Optimization"],
     "regions": ["APAC", "India", "Middle East"]
