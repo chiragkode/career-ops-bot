@@ -9,7 +9,8 @@ if api_key:
     try:
         genai.configure(api_key=api_key)
         # Switching to Gemini 2.0 Flash for stability and speed
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        # Updated for April 2026 model availability
+model = genai.GenerativeModel('gemini-3-flash-preview')
     except Exception as e:
         st.error(f"Configuration Error: {e}")
         st.stop()
