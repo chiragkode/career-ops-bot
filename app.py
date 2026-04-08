@@ -59,3 +59,10 @@ if st.button("Analyze Strategic Fit"):
             st.markdown(response.text)
     else:
         st.warning("Please upload a resume and paste a job description.")
+        # ... existing code ...
+
+with st.sidebar:
+    st.write("### 🧰 Pro Job-Hunting Scripts")
+    st.markdown("[🚀 AIHawk Auto-Applier](https://github.com/feder-cr/Jobs_Applier_AI_Agent_AIHawk)")
+    st.markdown("[📄 OptiResume Optimizer](https://github.com/AaryanGole26/OptiResume-AI)")
+    st.markdown("[🕵️ Scouter Job Assistant](https://github.com/agenisea/scouter)")
