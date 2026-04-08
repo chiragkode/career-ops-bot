@@ -7,16 +7,20 @@ st.set_page_config(page_title="Chirag's Career-Ops Bot", page_icon="🚀")
 st.title("💼 Chirag's Career-Ops Bot")
 st.subheader("Sales & Consulting Edition")
 
-# 2. Secure API Setup
-# This replaces the hardcoded key from the original to prevent the "Leaked" error
+# --- 3. SECURE API CONFIGURATION ---
 api_key = st.secrets.get("YOUR_GEMINI_API_KEY")
 
 if api_key:
-    genai.configure(api_key=api_key)
-    # Change from 'gemini-1.5-flash' to the 2026 stable version
-model = genai.GenerativeModel('gemini-2.5-flash')
+    try:
+        genai.configure(api_key=api_key)
+        # Using the stable 2026 model to avoid 404 errors
+        model = genai.GenerativeModel('gemini-2.5-flash')
+    except Exception as e:
+        st.error(f"AI Configuration Error: {e}")
+        st.stop()
 else:
-    st.error("Please add your API Key to Streamlit Secrets.")
+    # This 'else' must align perfectly with the 'if' above
+    st.error("API Key not found in Secrets. Please check your Streamlit Dashboard.")
     st.stop()
 
 # 3. Helper Function: PDF Extraction
